@@ -1,0 +1,70 @@
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    name: registry
+  spec:
+    tags:
+    - annotations:
+        openshift.io/imported-from: sqshq/piggymetrics-registry
+      from:
+        kind: DockerImage
+        name: sqshq/piggymetrics-registry
+      generation: null
+      importPolicy: {}
+      name: latest
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    name: registry
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: registry
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          deploymentconfig: registry
+      spec:
+        containers:
+        - env:
+          - name: CONFIG_SERVICE_PASSWORD
+            value: "123456"
+          image: sqshq/piggymetrics-registry
+          name: registry
+          ports:
+          - containerPort: 8761
+          resources: {}
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - registry
+        from:
+          kind: ImageStreamTag
+          name: registry:latest
+      type: ImageChange
+  status: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    name: registry
+  spec:
+    ports:
+    - name: 8761-tcp
+      port: 8761
+      targetPort: 8761
+    selector:
+      deploymentconfig: registry
+  status:
+    loadBalancer: {}
+

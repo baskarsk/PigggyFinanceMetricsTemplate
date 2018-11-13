@@ -1,0 +1,71 @@
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    name: monitoring
+  spec:
+    tags:
+    - annotations:
+        openshift.io/imported-from: sqshq/piggymetrics-monitoring
+      from:
+        kind: DockerImage
+        name: sqshq/piggymetrics-monitoring
+      generation: null
+      importPolicy: {}
+      name: latest
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    name: monitoring
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: monitoring
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          deploymentconfig: monitoring
+      spec:
+        containers:
+        - env:
+          - name: CONFIG_SERVICE_PASSWORD
+            value: "123456"
+          image: sqshq/piggymetrics-monitoring
+          name: monitoring
+          ports:
+          - containerPort: 8080
+          - containerPort: 8989
+          resources: {}
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - monitoring
+        from:
+          kind: ImageStreamTag
+          name: monitoring:latest
+      type: ImageChange
+  status: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    name: monitoring
+  spec:
+    ports:
+    - name: 8989-tcp
+      port: 8989
+      targetPort: 8989
+    selector:
+      deploymentconfig: monitoring
+  status:
+    loadBalancer: {}
+

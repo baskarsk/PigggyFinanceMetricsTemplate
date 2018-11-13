@@ -1,0 +1,57 @@
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    name: notification-service
+  spec:
+    tags:
+    - annotations:
+        openshift.io/imported-from: sqshq/piggymetrics-notification-service
+      from:
+        kind: DockerImage
+        name: sqshq/piggymetrics-notification-service
+      generation: null
+      importPolicy: {}
+      name: latest
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    name: notification-service
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: notification-service
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          deploymentconfig: notification-service
+      spec:
+        containers:
+        - env:
+          - name: CONFIG_SERVICE_PASSWORD
+            value: "123456"
+          - name: MONGODB_PASSWORD
+            value: "123456"
+          - name: NOTIFICATION_SERVICE_PASSWORD
+            value: "123456"
+          image: sqshq/piggymetrics-notification-service
+          name: notification-service
+          resources: {}
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - notification-service
+        from:
+          kind: ImageStreamTag
+          name: notification-service:latest
+      type: ImageChange
+  status: {}

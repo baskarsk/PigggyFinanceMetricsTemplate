@@ -1,0 +1,78 @@
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    name: auth-service
+  spec:
+    tags:
+    - annotations:
+        openshift.io/imported-from: sqshq/piggymetrics-auth-service
+      from:
+        kind: DockerImage
+        name: sqshq/piggymetrics-auth-service
+      generation: null
+      importPolicy: {}
+      name: latest
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    name: auth-service
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: auth-service
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          deploymentconfig: auth-service
+      spec:
+        containers:
+        - env:
+          - name: ACCOUNT_SERVICE_PASSWORD
+            value: "123456"
+          - name: CONFIG_SERVICE_PASSWORD
+            value: "123456"
+          - name: MONGODB_PASSWORD
+            value: "123456"
+          - name: NOTIFICATION_SERVICE_PASSWORD
+            value: "123456"
+          - name: STATISTICS_SERVICE_PASSWORD
+            value: "123456"
+          image: sqshq/piggymetrics-auth-service
+          name: auth-service
+          resources: {}
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - auth-service
+        from:
+          kind: ImageStreamTag
+          name: auth-service:latest
+      type: ImageChange
+  status: {}
+ - apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    name: auth-service
+  spec:
+    ports:
+    - name: 5000-tcp
+      port: 5000
+      targetPort: 5000
+    selector:
+      deploymentconfig: auth-service
+  status:
+    loadBalancer: {}
+kind: List
+metadata: {}
+

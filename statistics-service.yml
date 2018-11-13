@@ -1,0 +1,57 @@
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    name: statistics-service
+  spec:
+    tags:
+    - annotations:
+        openshift.io/imported-from: sqshq/piggymetrics-statistics-service
+      from:
+        kind: DockerImage
+        name: sqshq/piggymetrics-statistics-service
+      generation: null
+      importPolicy: {}
+      name: latest
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    name: statistics-service
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: statistics-service
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          deploymentconfig: statistics-service
+      spec:
+        containers:
+        - env:
+          - name: CONFIG_SERVICE_PASSWORD
+            value: "123456"
+          - name: MONGODB_PASSWORD
+            value: "123456"
+          - name: STATISTICS_SERVICE_PASSWORD
+            value: "123456"
+          image: sqshq/piggymetrics-statistics-service
+          name: statistics-service
+          resources: {}
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - statistics-service
+        from:
+          kind: ImageStreamTag
+          name: statistics-service:latest
+      type: ImageChange
+  status: {}
