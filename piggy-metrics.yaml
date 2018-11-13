@@ -1,0 +1,1546 @@
+apiVersion: v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: piggy-multi-module
+  
+parameters:
+- description: Git Source Repository
+  name: SOURCE_REPOSITORY
+  value: https://github.com/Jesudos/piggy
+  required: true
+- description: Git Source reference
+  name: SOURCE_REF
+  value: master
+  required: true
+- description: A simple way to deal with personal finance
+  name: DATA_DIRECTORY
+  value: /deployments/data
+  required: true
+  
+objects:
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: config
+      delete: blog
+    name: config
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: config:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      git:
+        ref: ${SOURCE_REF}
+        uri: ${SOURCE_REPOSITORY}
+      type: Git
+    strategy:
+      sourceStrategy:
+        env:
+        - name: MAVEN_ARGS_APPEND
+          value: -pl config --also-make
+        - name: ARTIFACT_DIR
+          value: config/target/
+        - name: MODULE_DIR
+          value: config
+        from:
+          kind: ImageStreamTag
+          name: redhat-openjdk18-openshift
+          namespace: openshift
+      type: Source
+    triggers:
+    - imageChange: {}
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+    
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: monitoring
+      delete: blog
+    name: monitoring
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: monitoring:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      git:
+        ref: ${SOURCE_REF}
+        uri: ${SOURCE_REPOSITORY}
+      type: Git
+    strategy:
+      sourceStrategy:
+        env:
+        - name: MAVEN_ARGS_APPEND
+          value: -pl monitoring --also-make
+        - name: ARTIFACT_DIR
+          value: monitoring/target/
+        from:
+          kind: ImageStreamTag
+          name: redhat-openjdk18-openshift:latest
+          namespace: openshift
+      type: Source
+    triggers:
+    - imageChange: {}
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+  
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: registry
+      delete: blog
+    name: registry
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: registry:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      git:
+        ref: ${SOURCE_REF}
+        uri: ${SOURCE_REPOSITORY}
+      type: Git
+    strategy:
+      sourceStrategy:
+        env:
+        - name: MAVEN_ARGS_APPEND
+          value: -pl registry --also-make
+        - name: ARTIFACT_DIR
+          value: registry/target/
+        from:
+          kind: ImageStreamTag
+          name: redhat-openjdk18-openshift:latest
+          namespace: openshift
+      type: Source
+    triggers:
+    - imageChange: {}
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+  
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: gateway
+      delete: blog
+    name: gateway
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: gateway:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      git:
+        ref: ${SOURCE_REF}
+        uri: ${SOURCE_REPOSITORY}
+      type: Git
+    strategy:
+      sourceStrategy:
+        env:
+        - name: MAVEN_ARGS_APPEND
+          value: -pl gateway --also-make
+        - name: ARTIFACT_DIR
+          value: gateway/target/
+        from:
+          kind: ImageStreamTag
+          name: redhat-openjdk18-openshift:latest
+          namespace: openshift
+      type: Source
+    triggers:
+    - imageChange: {}
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+  
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: auth-service
+      delete: blog
+    name: auth-service
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: auth-service:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      git:
+        ref: ${SOURCE_REF}
+        uri: ${SOURCE_REPOSITORY}
+      type: Git
+    strategy:
+      sourceStrategy:
+        env:
+        - name: MAVEN_ARGS_APPEND
+          value: -pl auth-service --also-make
+        - name: ARTIFACT_DIR
+          value: auth-service/target/
+        from:
+          kind: ImageStreamTag
+          name: redhat-openjdk18-openshift:latest
+          namespace: openshift
+      type: Source
+    triggers:
+    - imageChange: {}
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+  
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: account-service
+      delete: blog
+    name: account-service
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: account-service:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      git:
+        ref: ${SOURCE_REF}
+        uri: ${SOURCE_REPOSITORY}
+      type: Git
+    strategy:
+      sourceStrategy:
+        env:
+        - name: MAVEN_ARGS_APPEND
+          value: -pl account-service --also-make
+        - name: ARTIFACT_DIR
+          value: account-service/target/
+        from:
+          kind: ImageStreamTag
+          name: redhat-openjdk18-openshift:latest
+          namespace: openshift
+      type: Source
+    triggers:
+    - imageChange: {}
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+  
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: statistics-service
+      delete: blog
+    name: statistics-service
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: statistics-service:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      git:
+        ref: ${SOURCE_REF}
+        uri: ${SOURCE_REPOSITORY}
+      type: Git
+    strategy:
+      sourceStrategy:
+        env:
+        - name: MAVEN_ARGS_APPEND
+          value: -pl statistics-service --also-make
+        - name: ARTIFACT_DIR
+          value: statistics-service/target/
+        from:
+          kind: ImageStreamTag
+          name: redhat-openjdk18-openshift:latest
+          namespace: openshift
+      type: Source
+    triggers:
+    - imageChange: {}
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+  
+
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: turbine-stream-service
+      delete: blog
+    name: turbine-stream-service
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: turbine-stream-service:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      git:
+        ref: ${SOURCE_REF}
+        uri: ${SOURCE_REPOSITORY}
+      type: Git
+    strategy:
+      sourceStrategy:
+        env:
+        - name: MAVEN_ARGS_APPEND
+          value: -pl turbine-stream-service --also-make
+        - name: ARTIFACT_DIR
+          value: turbine-stream-service/target/
+        from:
+          kind: ImageStreamTag
+          name: redhat-openjdk18-openshift:latest
+          namespace: openshift
+      type: Source
+    triggers:
+    - imageChange: {}
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+  
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: config
+      delete: blog
+    name: config
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: config
+    strategy:
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: config
+          delete: blog
+          deploymentconfig: config
+      spec:
+        containers:
+        - env:
+          - name: DATA_DIRECTORY
+            value: ${DATA_DIRECTORY}
+          image: config
+          imagePullPolicy: Always
+          name: config
+          ports:
+          - containerPort: 8888
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 384Mi
+            requests:
+              cpu: 250m
+              memory: 128Mi
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - config
+        from:
+          kind: ImageStreamTag
+          name: config:latest
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+  
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: monitoring
+      delete: blog
+    name: monitoring
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: monitoring
+    strategy:
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: monitoring
+          delete: blog
+          deploymentconfig: monitoring
+      spec:
+        containers:
+        - env:
+          - name: DATA_DIRECTORY
+            value: ${DATA_DIRECTORY}
+          image: monitoring
+          imagePullPolicy: Always
+          name: monitoring
+          ports:
+          - containerPort: 8888
+            protocol: TCP
+          - containerPort: 8080
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 384Mi
+            requests:
+              cpu: 250m
+              memory: 128Mi
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - monitoring
+        from:
+          kind: ImageStreamTag
+          name: monitoring:latest
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+  
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: registry
+      delete: blog
+    name: registry
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: registry
+    strategy:
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: registry
+          delete: blog
+          deploymentconfig: registry
+      spec:
+        containers:
+        - env:
+          - name: DATA_DIRECTORY
+            value: ${DATA_DIRECTORY}
+          image: country-service
+          imagePullPolicy: Always
+          name: registry
+          ports:
+          - containerPort: 8761
+            protocol: TCP
+          - containerPort: 8888
+            name: http
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 384Mi
+            requests:
+              cpu: 250m
+              memory: 128Mi
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - registry
+        from:
+          kind: ImageStreamTag
+          name: registry:latest
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+  
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: gateway
+      delete: blog
+    name: gateway
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: gateway
+    strategy:
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: gateway
+          delete: blog
+          deploymentconfig: gateway
+      spec:
+        containers:
+        - env:
+          - name: DATA_DIRECTORY
+            value: ${DATA_DIRECTORY}
+          image: gateway
+          imagePullPolicy: Always
+          name: gateway
+          ports:
+          - containerPort: 4000
+            protocol: TCP
+          - containerPort: 8888
+            name: http
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 384Mi
+            requests:
+              cpu: 250m
+              memory: 128Mi
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - gateway
+        from:
+          kind: ImageStreamTag
+          name: gateway:latest
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+  
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: auth-service
+      delete: blog
+    name: auth-service
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: auth-service
+    strategy:
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: auth-service
+          delete: blog
+          deploymentconfig: auth-service
+      spec:
+        containers:
+        - env:
+          - name: DATA_DIRECTORY
+            value: ${DATA_DIRECTORY}
+          image: auth-service
+          imagePullPolicy: Always
+          name: auth-service
+          ports:
+          - containerPort: 5000
+            protocol: TCP
+          - containerPort: 8888
+            name: http
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 384Mi
+            requests:
+              cpu: 250m
+              memory: 128Mi
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - auth-service
+        from:
+          kind: ImageStreamTag
+          name: auth-service:latest
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+  
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: account-service
+      delete: blog
+    name: account-service
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: account-service
+    strategy:
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: account-service
+          delete: blog
+          deploymentconfig: account-service
+      spec:
+        containers:
+        - env:
+          - name: DATA_DIRECTORY
+            value: ${DATA_DIRECTORY}
+          image: account-service
+          imagePullPolicy: Always
+          name: account-service
+          ports:
+          - containerPort: 6000
+            protocol: TCP
+          - containerPort: 8888
+            name: http
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 384Mi
+            requests:
+              cpu: 250m
+              memory: 128Mi
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - account-service
+        from:
+          kind: ImageStreamTag
+          name: account-service:latest
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+  
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: statistics-service
+      delete: blog
+    name: statistics-service
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: statistics-service
+    strategy:
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: statistics-service
+          delete: blog
+          deploymentconfig: statistics-service
+      spec:
+        containers:
+        - env:
+          - name: DATA_DIRECTORY
+            value: ${DATA_DIRECTORY}
+          image: statistics-service
+          imagePullPolicy: Always
+          name: statistics-service
+          ports:
+          - containerPort: 7000
+            protocol: TCP
+          - containerPort: 8888
+            name: http
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 384Mi
+            requests:
+              cpu: 250m
+              memory: 128Mi
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - statistics-service
+        from:
+          kind: ImageStreamTag
+          name: statistics-service:latest
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+  
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: notification-service
+      delete: blog
+    name: notification-service
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: notification-service
+    strategy:
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: notification-service
+          delete: blog
+          deploymentconfig: notification-service
+      spec:
+        containers:
+        - env:
+          - name: DATA_DIRECTORY
+            value: ${DATA_DIRECTORY}
+          image: notification-service
+          imagePullPolicy: Always
+          name: notification-service
+          ports:
+          - containerPort: 8000
+            protocol: TCP
+          - containerPort: 5672
+            protocol: TCP
+          - containerPort: 465
+            protocol: TCP
+          - containerPort: 8888
+            name: http
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 384Mi
+            requests:
+              cpu: 250m
+              memory: 128Mi
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - notification-service
+        from:
+          kind: ImageStreamTag
+          name: notification-service:latest
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+  
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: turbine-stream-service
+      delete: blog
+    name: turbine-stream-service
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: turbine-stream-service
+    strategy:
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: turbine-stream-service
+          delete: blog
+          deploymentconfig: turbine-stream-service
+      spec:
+        containers:
+        - env:
+          - name: DATA_DIRECTORY
+            value: ${DATA_DIRECTORY}
+          image: turbine-stream-service
+          imagePullPolicy: Always
+          name: turbine-stream-service
+          ports:
+          - containerPort: 8085
+            protocol: TCP
+          - containerPort: 8888
+            name: http
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 384Mi
+            requests:
+              cpu: 250m
+              memory: 128Mi
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - turbine-stream-service
+        from:
+          kind: ImageStreamTag
+          name: turbine-stream-service:latest
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+  
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: config
+      delete: blog
+    name: config
+  spec:
+    tags:
+    - annotations: null
+      from:
+        kind: DockerImage
+        name: config:latest
+      generation: null
+      importPolicy: {}
+      name: latest
+  status: {}
+    
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: monitoring
+      delete: blog
+    name: monitoring
+  spec:
+    tags:
+    - annotations: null
+      from:
+        kind: DockerImage
+        name: monitoring:latest
+      generation: null
+      importPolicy: {}
+      name: latest
+  status: {}
+  
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: registry
+      delete: blog
+    name: registry
+  spec:
+    tags:
+    - annotations: null
+      from:
+        kind: DockerImage
+        name: registry:latest
+      generation: null
+      importPolicy: {}
+      name: latest
+  status: {}
+  
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: gateway
+      delete: blog
+    name: gateway
+  spec:
+    tags:
+    - annotations: null
+      from:
+        kind: DockerImage
+        name: gateway:latest
+      generation: null
+      importPolicy: {}
+      name: latest
+  status: {}
+  
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: auth-service
+      delete: blog
+    name: auth-service
+  spec:
+    tags:
+    - annotations: null
+      from:
+        kind: DockerImage
+        name: auth-service:latest
+      generation: null
+      importPolicy: {}
+      name: latest
+  status: {}
+  
+  
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: account-service
+      delete: blog
+    name: account-service
+  spec:
+    tags:
+    - annotations: null
+      from:
+        kind: DockerImage
+        name: account-service:latest
+      generation: null
+      importPolicy: {}
+      name: latest
+  status: {}
+  
+  
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: statistics-service
+      delete: blog
+    name: statistics-service
+  spec:
+    tags:
+    - annotations: null
+      from:
+        kind: DockerImage
+        name: statistics-service:latest
+      generation: null
+      importPolicy: {}
+      name: latest
+  status: {}
+  
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: notification-service
+      delete: blog
+    name: notification-service
+  spec:
+    tags:
+    - annotations: null
+      from:
+        kind: DockerImage
+        name: notification-service:latest
+      generation: null
+      importPolicy: {}
+      name: latest
+  status: {}
+  
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: turbine-stream-service
+      delete: blog
+    name: turbine-stream-service
+  spec:
+    tags:
+    - annotations: null
+      from:
+        kind: DockerImage
+        name: turbine-stream-service:latest
+      generation: null
+      importPolicy: {}
+      name: latest
+  status: {}
+    
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: config
+      delete: blog
+    name: config
+  spec:
+    ports:
+    - name: 8888-tcp
+      port: 8888
+      protocol: TCP
+      targetPort: 8888
+    selector:
+      deploymentconfig: config
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+    
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: monitoring
+      delete: blog
+    name: monitoring
+  spec:
+    ports:
+    - name: 8888-tcp
+      port: 8888
+      protocol: TCP
+      targetPort: 8888
+    - name: 8080-tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      deploymentconfig: monitoring
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+    
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: registry
+      delete: blog
+    name: registry
+  spec:
+    ports:
+    - name: 8761-tcp
+      port: 8761
+      protocol: TCP
+      targetPort: 8761
+    - name: 8888-tcp
+      port: 8888
+      protocol: TCP
+      targetPort: 8888
+    selector:
+      deploymentconfig: registry
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+    
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: gateway
+      delete: blog
+    name: gateway
+  spec:
+    ports:
+    - name: 4000-tcp
+      port: 4000
+      protocol: TCP
+      targetPort: 4000
+    - name: 8888-tcp
+      port: 8888
+      protocol: TCP
+      targetPort: 8888
+    selector:
+      deploymentconfig: gateway
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+    
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: auth-service
+      delete: blog
+    name: auth-service
+  spec:
+    ports:
+    - name: 5000-tcp
+      port: 5000
+      protocol: TCP
+      targetPort: 5000
+    - name: 8888-tcp
+      port: 8888
+      protocol: TCP
+      targetPort: 8888
+    selector:
+      deploymentconfig: auth-service
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+    
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: account-service
+      delete: blog
+    name: account-service
+  spec:
+    ports:
+    - name: 6000-tcp
+      port: 6000
+      protocol: TCP
+      targetPort: 6000
+    - name: 8888-tcp
+      port: 8888
+      protocol: TCP
+      targetPort: 8888
+    selector:
+      deploymentconfig: account-service
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+    
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: statistics-service
+      delete: blog
+    name: statistics-service
+  spec:
+    ports:
+    - name: 7000-tcp
+      port: 7000
+      protocol: TCP
+      targetPort: 7000
+    - name: 8888-tcp
+      port: 8888
+      protocol: TCP
+      targetPort: 8888
+    selector:
+      deploymentconfig: statistics-service
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+    
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: notification-service
+      delete: blog
+    name: notification-service
+  spec:
+    ports:
+    - name: 8000-tcp
+      port: 8000
+      protocol: TCP
+      targetPort: 8000
+    - name: 8888-tcp
+      port: 8888
+      protocol: TCP
+      targetPort: 8888
+    - name: 465-tcp
+      port: 465
+      protocol: TCP
+      targetPort: 465
+    - name: 5672-tcp
+      port: 5672
+      protocol: TCP
+      targetPort: 5672
+    selector:
+      deploymentconfig: notification-service
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+    
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: turbine-stream-service
+      delete: blog
+    name: turbine-stream-service
+  spec:
+    ports:
+    - name: 8085-tcp
+      port: 8085
+      protocol: TCP
+      targetPort: 8085
+    - name: 8888-tcp
+      port: 8888
+      protocol: TCP
+      targetPort: 8888
+    selector:
+      deploymentconfig: turbine-stream-service
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+    
+- apiVersion: v1
+  kind: Route
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: config
+      delete: blog
+    name: config
+  spec:
+    to:
+      kind: Service
+      name: config
+    port:
+      targetPort: 8888-tcp
+  status: {}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: monitoring
+      delete: blog
+    name: monitoring
+  spec:
+    to:
+      kind: Service
+      name: monitoring
+    port:
+      targetPort: 8080-tcp
+  status: {}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: registry
+      delete: blog
+    name: registry
+  spec:
+    to:
+      kind: Service
+      name: registry
+    port:
+      targetPort: 8761-tcp
+  status: {}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: gateway
+      delete: blog
+    name: gateway
+  spec:
+    to:
+      kind: Service
+      name: gateway
+    port:
+      targetPort: 4000-tcp
+  status: {}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: auth-service
+      delete: blog
+    name: auth-service
+  spec:
+    to:
+      kind: Service
+      name: auth-service
+    port:
+      targetPort: 5000-tcp
+  status: {}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: account-service
+      delete: blog
+    name: account-service
+  spec:
+    to:
+      kind: Service
+      name: account-service
+    port:
+      targetPort: 6000-tcp
+  status: {}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: statistics-service
+      delete: blog
+    name: statistics-service
+  spec:
+    to:
+      kind: Service
+      name: statistics-service
+    port:
+      targetPort: 7000-tcp
+  status: {}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: notification-service
+      delete: blog
+    name: notification-service
+  spec:
+    to:
+      kind: Service
+      name: notification-service
+    port:
+      targetPort: 5672-tcp
+  status: {}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: turbine-stream-service
+      delete: blog
+    name: turbine-stream-service
+  spec:
+    to:
+      kind: Service
+      name: turbine-stream-service
+    port:
+      targetPort: 8085-tcp
+  status: {}

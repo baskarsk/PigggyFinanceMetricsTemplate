@@ -1,0 +1,727 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    name: account-mongodb
+  spec:
+    tags:
+    - annotations:
+        openshift.io/imported-from: sqshq/piggymetrics-mongodb
+      from:
+        kind: DockerImage
+        name: sqshq/piggymetrics-mongodb
+      generation: null
+      importPolicy: {}
+      name: latest
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    name: account-mongodb
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: account-mongodb
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          deploymentconfig: account-mongodb
+      spec:
+        containers:
+        - env:
+          - name: INIT_DUMP
+            value: account-service-dump.js
+          - name: MONGODB_PASSWORD
+            value: "123456"
+          image: sqshq/piggymetrics-mongodb
+          name: account-mongodb
+          resources: {}
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - account-mongodb
+        from:
+          kind: ImageStreamTag
+          name: account-mongodb:latest
+      type: ImageChange
+  status: {}
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    name: account-service
+  spec:
+    tags:
+    - annotations:
+        openshift.io/imported-from: sqshq/piggymetrics-account-service
+      from:
+        kind: DockerImage
+        name: sqshq/piggymetrics-account-service
+      generation: null
+      importPolicy: {}
+      name: latest
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    name: account-service
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: account-service
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          deploymentconfig: account-service
+      spec:
+        containers:
+        - env:
+          - name: ACCOUNT_SERVICE_PASSWORD
+            value: "123456"
+          - name: CONFIG_SERVICE_PASSWORD
+            value: "123456"
+          - name: MONGODB_PASSWORD
+            value: "123456"
+          image: sqshq/piggymetrics-account-service
+          name: account-service
+          resources: {}
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - account-service
+        from:
+          kind: ImageStreamTag
+          name: account-service:latest
+      type: ImageChange
+  status: {}
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    name: auth-mongodb
+  spec:
+    tags:
+    - annotations:
+        openshift.io/imported-from: sqshq/piggymetrics-mongodb
+      from:
+        kind: DockerImage
+        name: sqshq/piggymetrics-mongodb
+      generation: null
+      importPolicy: {}
+      name: latest
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    name: auth-mongodb
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: auth-mongodb
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          deploymentconfig: auth-mongodb
+      spec:
+        containers:
+        - env:
+          - name: MONGODB_PASSWORD
+            value: "123456"
+          image: sqshq/piggymetrics-mongodb
+          name: auth-mongodb
+          resources: {}
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - auth-mongodb
+        from:
+          kind: ImageStreamTag
+          name: auth-mongodb:latest
+      type: ImageChange
+  status: {}
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    name: auth-service
+  spec:
+    tags:
+    - annotations:
+        openshift.io/imported-from: sqshq/piggymetrics-auth-service
+      from:
+        kind: DockerImage
+        name: sqshq/piggymetrics-auth-service
+      generation: null
+      importPolicy: {}
+      name: latest
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    name: auth-service
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: auth-service
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          deploymentconfig: auth-service
+      spec:
+        containers:
+        - env:
+          - name: ACCOUNT_SERVICE_PASSWORD
+            value: "123456"
+          - name: CONFIG_SERVICE_PASSWORD
+            value: "123456"
+          - name: MONGODB_PASSWORD
+            value: "123456"
+          - name: NOTIFICATION_SERVICE_PASSWORD
+            value: "123456"
+          - name: STATISTICS_SERVICE_PASSWORD
+            value: "123456"
+          image: sqshq/piggymetrics-auth-service
+          name: auth-service
+          resources: {}
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - auth-service
+        from:
+          kind: ImageStreamTag
+          name: auth-service:latest
+      type: ImageChange
+  status: {}
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    name: gateway
+  spec:
+    tags:
+    - annotations:
+        openshift.io/imported-from: sqshq/piggymetrics-gateway
+      from:
+        kind: DockerImage
+        name: sqshq/piggymetrics-gateway
+      generation: null
+      importPolicy: {}
+      name: latest
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    name: gateway
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: gateway
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          deploymentconfig: gateway
+      spec:
+        containers:
+        - env:
+          - name: CONFIG_SERVICE_PASSWORD
+            value: "123456"
+          image: sqshq/piggymetrics-gateway
+          name: gateway
+          ports:
+          - containerPort: 4000
+          resources: {}
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - gateway
+        from:
+          kind: ImageStreamTag
+          name: gateway:latest
+      type: ImageChange
+  status: {}
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    name: monitoring
+  spec:
+    tags:
+    - annotations:
+        openshift.io/imported-from: sqshq/piggymetrics-monitoring
+      from:
+        kind: DockerImage
+        name: sqshq/piggymetrics-monitoring
+      generation: null
+      importPolicy: {}
+      name: latest
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    name: monitoring
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: monitoring
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          deploymentconfig: monitoring
+      spec:
+        containers:
+        - env:
+          - name: CONFIG_SERVICE_PASSWORD
+            value: "123456"
+          image: sqshq/piggymetrics-monitoring
+          name: monitoring
+          ports:
+          - containerPort: 8080
+          - containerPort: 8989
+          resources: {}
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - monitoring
+        from:
+          kind: ImageStreamTag
+          name: monitoring:latest
+      type: ImageChange
+  status: {}
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    name: notification-mongodb
+  spec:
+    tags:
+    - annotations:
+        openshift.io/imported-from: sqshq/piggymetrics-mongodb
+      from:
+        kind: DockerImage
+        name: sqshq/piggymetrics-mongodb
+      generation: null
+      importPolicy: {}
+      name: latest
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    name: notification-mongodb
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: notification-mongodb
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          deploymentconfig: notification-mongodb
+      spec:
+        containers:
+        - env:
+          - name: MONGODB_PASSWORD
+            value: "123456"
+          image: sqshq/piggymetrics-mongodb
+          name: notification-mongodb
+          resources: {}
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - notification-mongodb
+        from:
+          kind: ImageStreamTag
+          name: notification-mongodb:latest
+      type: ImageChange
+  status: {}
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    name: notification-service
+  spec:
+    tags:
+    - annotations:
+        openshift.io/imported-from: sqshq/piggymetrics-notification-service
+      from:
+        kind: DockerImage
+        name: sqshq/piggymetrics-notification-service
+      generation: null
+      importPolicy: {}
+      name: latest
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    name: notification-service
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: notification-service
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          deploymentconfig: notification-service
+      spec:
+        containers:
+        - env:
+          - name: CONFIG_SERVICE_PASSWORD
+            value: "123456"
+          - name: MONGODB_PASSWORD
+            value: "123456"
+          - name: NOTIFICATION_SERVICE_PASSWORD
+            value: "123456"
+          image: sqshq/piggymetrics-notification-service
+          name: notification-service
+          resources: {}
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - notification-service
+        from:
+          kind: ImageStreamTag
+          name: notification-service:latest
+      type: ImageChange
+  status: {}
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    name: rabbitmq
+  spec:
+    tags:
+    - annotations:
+        docker.io/imported-from: rabbitmq:3-management
+      from:
+        kind: DockerImage
+        name: rabbitmq:3-management
+      generation: null
+      importPolicy: {}
+      name: 3-management
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    name: rabbitmq
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: rabbitmq
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          deploymentconfig: rabbitmq
+      spec:
+        containers:
+        - image: rabbitmq:3-management
+          name: rabbitmq
+          ports:
+          - containerPort: 15672
+          resources: {}
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - rabbitmq
+        from:
+          kind: ImageStreamTag
+          name: rabbitmq:3-management
+      type: ImageChange
+  status: {}
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    name: registry
+  spec:
+    tags:
+    - annotations:
+        openshift.io/imported-from: sqshq/piggymetrics-registry
+      from:
+        kind: DockerImage
+        name: sqshq/piggymetrics-registry
+      generation: null
+      importPolicy: {}
+      name: latest
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    name: registry
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: registry
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          deploymentconfig: registry
+      spec:
+        containers:
+        - env:
+          - name: CONFIG_SERVICE_PASSWORD
+            value: "123456"
+          image: sqshq/piggymetrics-registry
+          name: registry
+          ports:
+          - containerPort: 8761
+          resources: {}
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - registry
+        from:
+          kind: ImageStreamTag
+          name: registry:latest
+      type: ImageChange
+  status: {}
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    name: statistics-mongodb
+  spec:
+    tags:
+    - annotations:
+        openshift.io/imported-from: sqshq/piggymetrics-mongodb
+      from:
+        kind: DockerImage
+        name: sqshq/piggymetrics-mongodb
+      generation: null
+      importPolicy: {}
+      name: latest
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    name: statistics-mongodb
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: statistics-mongodb
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          deploymentconfig: statistics-mongodb
+      spec:
+        containers:
+        - env:
+          - name: MONGODB_PASSWORD
+            value: "123456"
+          image: sqshq/piggymetrics-mongodb
+          name: statistics-mongodb
+          resources: {}
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - statistics-mongodb
+        from:
+          kind: ImageStreamTag
+          name: statistics-mongodb:latest
+      type: ImageChange
+  status: {}
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    name: statistics-service
+  spec:
+    tags:
+    - annotations:
+        openshift.io/imported-from: sqshq/piggymetrics-statistics-service
+      from:
+        kind: DockerImage
+        name: sqshq/piggymetrics-statistics-service
+      generation: null
+      importPolicy: {}
+      name: latest
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    name: statistics-service
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: statistics-service
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          deploymentconfig: statistics-service
+      spec:
+        containers:
+        - env:
+          - name: CONFIG_SERVICE_PASSWORD
+            value: "123456"
+          - name: MONGODB_PASSWORD
+            value: "123456"
+          - name: STATISTICS_SERVICE_PASSWORD
+            value: "123456"
+          image: sqshq/piggymetrics-statistics-service
+          name: statistics-service
+          resources: {}
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - statistics-service
+        from:
+          kind: ImageStreamTag
+          name: statistics-service:latest
+      type: ImageChange
+  status: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    name: gateway
+  spec:
+    ports:
+    - name: 4000-tcp
+      port: 4000
+      targetPort: 4000
+    selector:
+      deploymentconfig: gateway
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    name: monitoring
+  spec:
+    ports:
+    - name: 8080-tcp
+      port: 8080
+      targetPort: 8080
+    - name: 8989-tcp
+      port: 8989
+      targetPort: 8989
+    selector:
+      deploymentconfig: monitoring
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    name: rabbitmq
+  spec:
+    ports:
+    - name: 15672-tcp
+      port: 15672
+      targetPort: 15672
+    selector:
+      deploymentconfig: rabbitmq
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    name: registry
+  spec:
+    ports:
+    - name: 8761-tcp
+      port: 8761
+      targetPort: 8761
+    selector:
+      deploymentconfig: registry
+  status:
+    loadBalancer: {}
+kind: List
+metadata: {}
