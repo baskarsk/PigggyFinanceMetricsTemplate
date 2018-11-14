@@ -214,7 +214,6 @@ items:
           image: sqshq/piggymetrics-monitoring
           name: monitoring
           ports:
-          - containerPort: 8080
           - containerPort: 8989
           resources: {}
     test: false
