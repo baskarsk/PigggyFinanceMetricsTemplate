@@ -65,7 +65,7 @@ items:
     ports: 
     - name: 8080-tcp
       port: 8080
-      targetPort: 8989
+      targetPort: 8080
     - name: 8989-tcp
       port: 8989
       targetPort: 8989
