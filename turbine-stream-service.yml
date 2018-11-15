@@ -1,0 +1,72 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: turbine-stream-service
+      delete: blog
+    name: turbine-stream-service
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: turbine-stream-service
+    strategy:
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: turbine-stream-service
+          delete: blog
+          deploymentconfig: turbine-stream-service
+      spec:
+        containers:
+        - env:
+          - name: DATA_DIRECTORY
+            value: ${DATA_DIRECTORY}
+          image: turbine-stream-service
+          imagePullPolicy: Always
+          name: turbine-stream-service
+          ports:
+          - containerPort: 8085
+            protocol: TCP
+          - containerPort: 8888
+            name: http
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 384Mi
+            requests:
+              cpu: 250m
+              memory: 128Mi
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - turbine-stream-service
+        from:
+          kind: ImageStreamTag
+          name: turbine-stream-service:latest
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+kind: List
+metadata: {}
