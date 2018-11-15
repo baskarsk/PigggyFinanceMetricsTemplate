@@ -41,6 +41,7 @@ items:
           image: sqshq/piggymetrics-turbine-stream-service
           name: turbine-stream-service
           ports:
+          - containerPort: 8080
           - containerPort: 8989
           resources: {}
     test: false
@@ -61,7 +62,10 @@ items:
     creationTimestamp: null
     name: turbine-stream-service
   spec:
-    ports: 
+    ports:
+    - name: 8080-tcp
+      port: 8080
+      targetPort: 8080    
     - name: 8989-tcp
       port: 8989
       targetPort: 8989
