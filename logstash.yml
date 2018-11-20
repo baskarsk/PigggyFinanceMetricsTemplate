@@ -1,0 +1,79 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    name: logstash
+  spec:
+    tags:
+    - annotations:
+        docker.io/imported-from: logstash:5.2.2
+      from:
+        kind: DockerImage
+        name: logstash:5.2.2
+      generation: null
+      importPolicy: {}
+      name: 5.2.2
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    name: logstash
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: logstash
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          deploymentconfig: logstash
+      spec:
+        containers:
+        - image: logstash:5.2.2
+          name: logstash
+          ports:
+          - containerPort: 25826
+          resources: {}
+          livenessProbe:
+            httpGet:
+              path: /logstash
+              port: 25826
+              scheme: HTTP
+            timeoutSeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 1
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - logstash
+        from:
+          kind: ImageStreamTag
+          name: logstash:5.2.2
+      type: ImageChange
+  status: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    name: logstash
+  spec:
+    ports:
+    - name: 25826-tcp
+      port: 25826
+      targetPort: 25826
+    selector:
+      deploymentconfig: logstash
+  status:
+    loadBalancer: {}
+kind: List
+metadata: {}

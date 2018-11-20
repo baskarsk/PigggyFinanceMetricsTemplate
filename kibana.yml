@@ -1,0 +1,82 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    name: kibana
+  spec:
+    tags:
+    - annotations:
+        docker.io/imported-from: kibana:5.2.2
+      from:
+        kind: DockerImage
+        name: kibana:5.2.2
+      generation: null
+      importPolicy: {}
+      name: 5.2.2
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    name: kibana
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: kibana
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          deploymentconfig: kibana
+      spec:
+        containers:
+        - image: kibana:5.2.2
+          name: kibana
+          env: 
+          - name: xpack.security.enabled
+            value: false
+          ports:
+          - containerPort: 5601
+          resources: {}
+          livenessProbe:
+            httpGet:
+              path: /logstash
+              port: 5601
+              scheme: HTTP
+            timeoutSeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 1
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - kibana
+        from:
+          kind: ImageStreamTag
+          name: kibana:5.2.2
+      type: ImageChange
+  status: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    name: kibana
+  spec:
+    ports:
+    - name: 5601-tcp
+      port: 5601
+      targetPort: 5601
+    selector:
+      deploymentconfig: kibana
+  status:
+    loadBalancer: {}
+kind: List
+metadata: {}
