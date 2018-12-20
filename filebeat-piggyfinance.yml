@@ -72,12 +72,18 @@ data:
             namespace: ${POD_NAMESPACE}
         #- add_docker_metadata: 
         #    host: "unix:///var/run/docker.sock"
-logging:
-  to_files: true
-  level: warning
-  level: info
-  level: debug
-  level: error
+        
+logging.to_files: true
+logging.level: debug
+logging.selectors: ["piggyfinance","account-service","statistics-service","beat"]
+logging.files: 
+  keepfiles: 2
+  rotateeverybytes: 1m
+  
+  
+  #level: info
+  #level: warning
+  #level: error
   
 ---
 apiVersion: extensions/v1beta1
